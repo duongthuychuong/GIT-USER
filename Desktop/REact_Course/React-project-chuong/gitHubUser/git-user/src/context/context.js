@@ -16,12 +16,37 @@ const GithubProvider = ({ children }) => {
   const [requests, setRequests] = useState(0);
   const [loading, setLoading] = useState(false);
 
+  const fetchRepos = async (login) => {
+    try {
+      const response = await axios(
+        `${rootUrl}/users/${login}/repos?per_page=100`
+      );
+      setRepos(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchFollowers = async (followers_url) => {
+    try {
+      const response = await axios(`${followers_url}?per_page=100`);
+      setFollowers(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const searchUser = async (user) => {
     toggleError();
     setLoading(true);
     try {
       const response = await axios(`${rootUrl}/users/${user}`);
-      setGithubUser(response.data);
+      if (response) {
+        setGithubUser(response.data);
+        const { login, followers_url } = response.data;
+        fetchRepos(login);
+        fetchFollowers(followers_url);
+      }
     } catch (error) {
       toggleError(true, `There is no user match this user name, ${user}`);
       console.error(error);
