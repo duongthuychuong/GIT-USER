@@ -15,6 +15,20 @@ const GithubProvider = ({ children }) => {
   // request loading
   const [requests, setRequests] = useState(0);
   const [loading, setLoading] = useState(false);
+
+  const searchUser = async (user) => {
+    toggleError();
+    setLoading(true);
+    try {
+      const response = await axios(`${rootUrl}/users/${user}`);
+      setGithubUser(response.data);
+    } catch (error) {
+      toggleError(true, `There is no user match this user name, ${user}`);
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
   // check rate
   const checkRequests = () => {
     axios(`${rootUrl}/rate_limit`)
@@ -25,6 +39,7 @@ const GithubProvider = ({ children }) => {
         setRequests(remaining);
         if (remaining === 0) {
           // throw errors
+          toggleError(true, "Sorry you are out of requests");
         }
       })
       .catch((err) => {
@@ -32,9 +47,18 @@ const GithubProvider = ({ children }) => {
       });
   };
   // error
+  const [error, setError] = useState({
+    show: false,
+    msg: "",
+  });
+  const toggleError = (show = false, message = "") => {
+    setError({ show, msg: message });
+  };
   useEffect(checkRequests, []);
   return (
-    <GithubContext.Provider value={{ githubUser, repos, followers, requests }}>
+    <GithubContext.Provider
+      value={{ githubUser, repos, followers, requests, error, searchUser }}
+    >
       {children}
     </GithubContext.Provider>
   );
