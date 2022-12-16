@@ -39,7 +39,9 @@ const Repos = () => {
         {/* <ExampleChart />; */}
 
         <Pie3D data={mostUsed} />
+        <Column3D data={mostStars} />
         <Doughnut2D data={mostStars} />
+        <Bar3D data={mostStars} />
       </Wrapper>
     </section>
   );
