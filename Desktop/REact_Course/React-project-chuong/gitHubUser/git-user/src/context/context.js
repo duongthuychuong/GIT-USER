@@ -26,6 +26,7 @@ const GithubProvider = ({ children }) => {
       toggleError(true, `There is no user match this user name, ${user}`);
       console.error(error);
     } finally {
+      checkRequests();
       setLoading(false);
     }
   };
@@ -57,7 +58,15 @@ const GithubProvider = ({ children }) => {
   useEffect(checkRequests, []);
   return (
     <GithubContext.Provider
-      value={{ githubUser, repos, followers, requests, error, searchUser }}
+      value={{
+        githubUser,
+        repos,
+        followers,
+        requests,
+        error,
+        searchUser,
+        loading,
+      }}
     >
       {children}
     </GithubContext.Provider>
